@@ -1,5 +1,6 @@
 //integrating socket.io with our server
 // socket.io allows for connection to and from client (browser)and server
+// NOTE * events in socket.io will always be linked to each other
 const path = require('path');
 const http = require('http');
 const express = require('express');
@@ -16,8 +17,33 @@ var io = socketIO(server);
 app.use(express.static(path.join(__dirname,"../public")));
 
 //register an event listener
+//listen to an event and respond accordingly
+//connection is our event here!
 io.on('connection',(socket)=>{
 	console.log("New user connected!");
+
+	// socket.emit('newEmail',{
+	// 	from : "skrr@udemy.com",
+	// 	text : "Register for new courses today!",
+	// 	createdAt : 124
+	// });
+
+	//new Message event from server
+	socket.emit('newMessage',{
+		from : "Neigbour",
+		text : "Turn that shit up fool!",
+		createdAt : 125
+	});
+
+	//event listener for createMesage event
+	socket.on('createMessage',function(sent){
+		console.log("createMessage",sent);
+	});
+	// //create email event
+	// socket.on('createEmail',(newEmail)=>{
+	// 	console.log("createEmail",newEmail);
+	// });
+
 	//registering our event
 	socket.on('disconnect',()=>{
 		console.log("User disconnected!");

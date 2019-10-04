@@ -1,0 +1,29 @@
+<!-- this is a static webpage -->
+<!-- it represents our client  -->
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Chat App</title>
+	<meta charset="utf-8">
+</head>
+<body>
+	<h1>Welcome to my app!</h1>
+<!-- by integrating our server with socket.io we get access to alotof new functionality such as routes and libraries -->
+<!-- one particular lib we get access to is a js lib found in socket.io/socket.io.js -->
+	<!-- we now import that lib into our html file to allow us to create and listen to event to and from the server -->
+	<script type="text/javascript" src="/socket.io/socket.io.js"></script>
+	<!-- we create a new script for event handling -->
+	<script type="text/javascript" >
+		 //we first connect to our server
+		 var socket = io();
+		 socket.on('connect',()=>{
+		 	console.log("Connected to server!");
+		 });
+		 //in the case we disconnect from server
+		 socket.on('disconnect',()=>{
+		 	console.log("Disconnected from server!");
+		 });
+	</script>
+	<
+</body>
+</html>
