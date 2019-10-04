@@ -21,6 +21,7 @@ app.use(express.static(path.join(__dirname,"../public")));
 //connection is our event here!
 io.on('connection',(socket)=>{
 	console.log("New user connected!");
+	
 
 	// socket.emit('newEmail',{
 	// 	from : "skrr@udemy.com",
@@ -28,17 +29,54 @@ io.on('connection',(socket)=>{
 	// 	createdAt : 124
 	// });
 
-	//new Message event from server
-	socket.emit('newMessage',{
-		from : "Neigbour",
-		text : "Turn that shit up fool!",
-		createdAt : 125
+	// //new Message event from server
+	// socket.emit('newMessage',{
+	// 	// socket.emit() emits an event to a single connection
+	// 	from : "Neigbour",
+	// 	text : "Turn that shit up fool!",
+	// 	createdAt : 125
+	// });
+
+	//CHALLENGE
+	//YOU ARE ADMIN OF A GROUP ,SEND WELCOME MESSAGE TO NEW USER
+	//NOTIFY OLD USERS OF A NEW USER WITHOUT NEW USER BEEN NOTIFIED
+
+
+// response to event of new user
+	socket.emit('createMessage',{
+		from : "Admin",
+		text : "Welcome to the winning team!",
+		createdAt : new Date().getTime()
+	});
+//old users
+	socket.on('createMessage',function(){
+		socket.broadcast.emit('createMessage',{
+			from :"Admin",
+			text :"We have a new user!",
+			createdAt : new Date().getTime()
+		});
 	});
 
 	//event listener for createMesage event
-	socket.on('createMessage',function(sent){
-		console.log("createMessage",sent);
-	});
+	// socket.on('createMessage',function(sent){
+	// 	console.log("createMessage",sent);
+	// 	//io.emit emits an event to every connection on network
+	// 	io.emit('newMessage',{
+	// 		from :sent.from,
+	// 		text :sent.text,
+	// 		createdAt : new Date().getTime()
+	// 	});
+		// *BROADCASTING
+		// this refers to the emitting of a event for every person on a connection but one
+		// socket.broadcast.emit('newMessage',{
+		// 	from : sent.from,
+		// 	text : sent.text,
+		// 	createdAt : new Date().getTime()
+		// });
+	
+
+// (socket.emit(client) -> socket.on(server) -> io.emit(server) ->socket.on (everyclient))
+	// });
 	// //create email event
 	// socket.on('createEmail',(newEmail)=>{
 	// 	console.log("createEmail",newEmail);
