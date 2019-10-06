@@ -1,3 +1,4 @@
+
 var socket = io(); //creates our connection
 //socket.on listens to a new event
 socket.on('connect',function(){
@@ -11,9 +12,10 @@ socket.on('connect',function(){
 // we can only write back our message if we're connected to server
 // event of new user requesting to join group
 	socket.emit('createMessage',{
-		to :"Admin",
+		from :"client",
 		text: "I wanna join group!"
 	});
+	// socket.emit('createMessage',generateMessage("client","I want to join group"));
 });
 // we are now creating a custom event
 //we shall use an email app as our example
