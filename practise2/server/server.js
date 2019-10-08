@@ -1,74 +1,85 @@
-// * SERVER SIDE
-//we are going to use socket.io to enhance the client,server 
-//relationship
-
+// we want to integrate socket.io into our server
+//socket.io enables real-time,bidirectional communication
+// btwn the server and client
 const express = require('express');
 const path = require('path');
 const http = require('http');
 const socketIO = require('socket.io');
+const {generateLocationMessage} = require('./functions/functions.js');
+//make our port dynamic cause of heroku
+const port = process.env.PORT || 3000;
 
 var app = express();
 var server = http.createServer(app);
 var io = socketIO(server);
 
-//we need an express middleware
-//the middleware will give us access to our static webpage
+// we now create a middleware to access our static html page
 app.use(express.static(path.join(__dirname,"../client")));
 
-//want to make a connection
-io.on('connection',(socket)=>{
+//CREATE A CONNECTION
+io.on('connect',(socket)=>{
 	console.log("New device connected!");
 
-	// receive the event from client
-	socket.on('newGroup',function(message){
-		console.log("New message!:",message);
-
-		socket.emit('newGroup',{
-			from : message.to,
-			text : "Welcome to group Node js!"
-		})
-	});
-	
-	// we want to notify other users of new member
-	socket.broadcast.emit('newGroup',{
+	socket.emit('newMessage',{
 		from : "Admin",
-		text : "We have a new member in the group!"
+		text : "Welcome to my chat app!"
 	});
 
-	//the receiving and sending process to and from server
+	socket.on('createMessage',function(message,callback){
+		console.log("New sign-up!",message);
 
-	//from server
-	// socket.emit emits an event for a single connection
-	// socket.broadcast.emit('newEmail',{
-	// 	from : "menstayfit",
-	// 	text : "eat your apple today!",
-	// 	time : new Date().getTime()
-	// });
+		io.emit('newMessage',{
+		from : message.from,
+		text : message.text
+		});	
+		callback();
+	});
 
-	// we want to emit an event for every connection
-	// socket.on('createMessage',function(message){
-	// 	// IO.EMIT emits an event for every connection on network
-	// 	io.emit('newMessage',{
-	// 		from : message.from,
-	// 		text : message.text,
-	// 		time : new Date().getTime()
-	// 	});
+	
+	// emulate how private groups work
+	// you ask admin to let you join,admin responds
+	//and notifies other users with custom message
 
-	// 	console.log("createMessage:",message);
-	// });
-	//receive event from user
-	// socket.on("newEmail",function(email){
-	// 	console.log("newEmail :",email)
-	// });
+	//the join clan event is received
+// 	socket.on('joinClan',function(request,callback){
+// 		console.log("New request!",request);
+// 		callback ();
+// 		//admin respnds to request
+// // socket.emit emits an event for a single connection
+// // io.emit emits an event for every single connection
+// 		socket.emit('joinClan',{
+// 			from : request.to,
+// 			text : "Welcome to the clan!",
+// 			createdAt : new Date().getTime()
+// 		});
+// 	});
+// // we also want to notify other users of a new user except the user 
+// //we shall broadcast 
+	socket.broadcast.emit('newMessage',{
+		from : "Admin",
+		text : "We have a new user!",
+		createdAt : new Date().getTime()
+	});
 
- // how whatsapp groups work!
+	// new event listener for our createLocation
+	socket.on('createLocationMessage',function(coords){
+		// io.emit("newMessage",{
+		// 	from : "Admin",
+		// 	text : `${coords.latitude},${coords.longitude}`
+		// });
+		// we want to generate a url that will take the user 
+		// to specified location
 
+		io.emit('newLocationMessage',generateLocationMessage("Admin",coords.latitude,coords.longitude));
+	});
 
 	socket.on('disconnect',function(){
 		console.log("New device disconnected!");
-	})
+	});
 });
-//bind app to port
+
+
+//bind our app to port 3000
 server.listen(3000,()=>{
-	console.log("Connected to port 3000");
+	console.log(`Connected to port ${port}`);
 });
