@@ -5,6 +5,7 @@ const express = require('express');
 const path = require('path');
 const http = require('http');
 const socketIO = require('socket.io');
+const moment = require('moment');
 const {generateLocationMessage} = require('./functions/functions.js');
 //make our port dynamic cause of heroku
 const port = process.env.PORT || 3000;
@@ -58,19 +59,20 @@ io.on('connect',(socket)=>{
 	socket.broadcast.emit('newMessage',{
 		from : "Admin",
 		text : "We have a new user!",
-		createdAt : new Date().getTime()
+		createdAt : moment().valueOf()
 	});
 
 	// new event listener for our createLocation
 	socket.on('createLocationMessage',function(coords){
-		// io.emit("newMessage",{
-		// 	from : "Admin",
-		// 	text : `${coords.latitude},${coords.longitude}`
-		// });
+		io.emit("newMessage",{
+			from : "Admin",
+			url : `https://google.com/maps?q${coords.latitude},${coords.longitude}`,
+			createdAt : moment().valueOf()
+		});
 		// we want to generate a url that will take the user 
 		// to specified location
 
-		io.emit('newLocationMessage',generateLocationMessage("Admin",coords.latitude,coords.longitude));
+		// io.emit('newLocationMessage',generateLocationMessage("Admin",coords.latitude,coords.longitude));
 	});
 
 	socket.on('disconnect',function(){
