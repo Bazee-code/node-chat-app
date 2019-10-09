@@ -15,7 +15,11 @@
 // console.log(date.format("LT"));
 const moment = require('moment');
 
-var createdAt = new Date();
-var date = moment(createdAt);
+// var createdAt = new Date();
+// var date = moment(createdAt);
 
-console.log(date.format('LT'));
+// console.log(date.format('LT'));
+var createdAt = moment().valueOf(); 
+//moment().valueOf gets our timestamp
+// same as new Date().getTime()
+console.log(createdAt);

@@ -64,7 +64,7 @@ io.on('connect',(socket)=>{
 
 	// new event listener for our createLocation
 	socket.on('createLocationMessage',function(coords){
-		io.emit("newMessage",{
+		io.emit("newLocationMessage",{
 			from : "Admin",
 			url : `https://google.com/maps?q${coords.latitude},${coords.longitude}`,
 			createdAt : moment().valueOf()

@@ -39,14 +39,24 @@ jQuery('#message-form').on('submit',function(e){
 //event that makes message appear on webpage
 socket.on('newMessage',function(message){
 	var formattedTime = moment(message.createdAt).format('LT');
-	console.log("New Message!",message);
-	//use jQuesry to create an element
-	var li = jQuery('<li></li>');
-	li.text(`${formattedTime},${message.from}: ${message.text}`);
+	var template = jQuery('#message-template').html();
+	var html = Mustache.render(template,{
+		text: message.text,
+		from : message.from,
+		createdAt : formattedTime
+	});
 
-	// we now add our data to the DOM
-	jQuery("#messages").append(li);
-	// .append calls it as the last function
+	jQuery('#messages').append(html);
+
+	
+	// console.log("New Message!",message);
+	// //use jQuesry to create an element
+	// var li = jQuery('<li></li>');
+	// li.text(`${formattedTime},${message.from}: ${message.text}`);
+
+	// // we now add our data to the DOM
+	// jQuery("#messages").append(li);
+	// // .append calls it as the last function
 });
 
 // send our location to server 
@@ -78,16 +88,25 @@ locationButton.on('click',function(){
 //we need a listener for newLocationMessage
 socket.on('newLocationMessage',function (message){
 	var formattedTime = moment(message.createdAt).format('LT');
-	var li = jQuery('<li></li>');
-	var a = jQuery('<a target ="_blank">Current location</a>');
 
-	li.text(`${formattedTime}:${message.from}: `);
-	//update anchor tag
-	a.attr('href',message.url);
-	//append to end of list item
-	li.append(a);
+	var template = jQuery('#location-message-template').html();
+	var html = Mustache.render(template,{
+		from : message.from,
+		createdAt : formattedTime,
+		url : message.url
+	});
+	//we then append to our li to make it appear on webpage
+	jQuery('#messages').append(html);
+	// var li = jQuery('<li></li>');
+	// var a = jQuery('<a target ="_blank">Current location</a>');
 
-	jQuery('#messages').append(li);
+	// li.text(`${formattedTime}:${message.from}: `);
+	// //update anchor tag
+	// a.attr('href',message.url);
+	// //append to end of list item
+	// li.append(a);
+
+	// jQuery('#messages').append(li);
 });
 
 socket.on('disconnect',function(){
